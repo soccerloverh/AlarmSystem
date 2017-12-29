@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hck.mapper.UserMapper">
+	<sql id="ByName" >and user_name like #{user_name}</sql>
+	<sql id="ByLevel">and user_level=#{user_level}</sql>
+	
+	<select id="getUsersCountWithCondition" parameterType="UserSearchCondition" resultType="int">
+		select count(*) from user where 0 = 0
+		<if test="user_name != ''">
+			<include refid="ByName"/>
+		</if>
+		<if test="user_level != -1">
+			<include refid="ByLevel"/>
+		</if>
+	</select>
+	
+	<!-- 根据条件模糊查询 -->
+	<select id="getUserWithCondition" parameterType="UserSearchCondition" resultType="User">
+		select user_id,user_name,user_level from user where 0 = 0
+		<if test="user_name != ''">
+			<include refid="ByName"/>
+		</if>
+		<if test="user_level != -1">
+			<include refid="ByLevel"/>
+		</if>
+		limit #{limit.offset},#{limit.rowcount};
+	</select>
+	
+	
+	
+	<select id="getUserById" parameterType="int" resultType="User">
+		Select * from user where user_id = #{id}
+	</select>
+	
+	<select id="getUsersWithLimit" parameterType="SqlLimit" resultType="User">
+		Select user_id,user_name,user_level from user limit #{offset},#{rowcount}
+	</select>
+	
+	<select id="getUserByNameAndPassword" parameterType="User" resultType="User">
+		Select user_id,user_name,user_level from user where user_name = #{user_name} and user_password = #{user_password}
+	</select>
+	
+	<select id="getUsersCount" resultType="int">
+		select count(*) from user;
+	</select>
+	
+	<update id="updateUser" parameterType="User" >
+		update user set user_name=#{user_name},user_password=#{user_password},user_level=#{user_level} where user_id = #{user_id}
+	</update>
+	
+	<delete id="deleteUserById" parameterType="int">
+		delete from user where user_id = #{id}
+	</delete>
+	
+	<insert id="addUser" parameterType="User">
+		insert into user(user_name,user_password,user_level) values(#{user_name},#{user_password},#{user_level})
+	</insert>
+</mapper>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hck.mapper.AlarmMapper">
+	<!-- 删除Eigen -->
+	<delete id="deleteEigenById" parameterType="int">
+		delete from eigen_alarm where info_id = #{id}
+	</delete>
+	
+	<!-- 删除DNS -->
+	<delete id="deleteDNSById" parameterType="int">
+		delete from blackDNS_alarm where info_id = #{id}
+	</delete>
+	
+	<!-- 删除IP -->
+	<delete id="deleteIPById" parameterType="int">
+		delete from blackIP_alarm where info_id = #{id}
+	</delete>
+	
+	<!-- 删除Email -->
+	<delete id="deleteEmailById" parameterType="int">
+		delete from email_alarm where info_id = #{id}
+	</delete>
+	
+	<!-- 删除INFO -->
+	<delete id="deleteAlarmInfoById" parameterType="int">
+		delete from alarm_info where info_id = #{id}
+	</delete>
+	
+	<select id="getInfoID" resultType="int">
+		select max(info_id) from alarm_info;
+	</select>
+	
+	<!-- 新增Eigen -->
+	<insert id="insertEigen" parameterType="Alarm">
+		insert into eigen_alarm(info_id,eigen_sourceIP,eigen_destinationIP,eigen_protocol) values(#{info_id},#{eigen_sourceIP},#{eigen_destinationIP},#{eigen_protocol});
+	</insert>
+	
+	<!-- 新增IP -->
+	<insert id="insertIP" parameterType="Alarm">
+		insert into blackIP_alarm(info_id,blackIP_ip) values(#{info_id},#{blackIP_ip});
+	</insert>
+	
+	<!-- 新增DNS -->
+	<insert id="insertDNS" parameterType="Alarm">
+		insert into blackDNS_alarm(info_id,blackDNS_dns) values(#{info_id},#{blackDNS_DNS});
+	</insert>
+	
+	<!-- 新增Email -->
+	<insert id="insertEmail" parameterType="Alarm">
+		insert into email_alarm(info_id,email_location,email_blockwords) values(#{info_id},#{email_location},#{email_blockwords});
+	</insert>
+	
+	<!-- 新增AlarmInfo -->
+	<insert id="insertAlarmInfo" parameterType="Alarm">
+		insert into alarm_info(alarm_name,alarm_type_id,alarm_level,alarm_note) value(#{alarm_name},#{alarm_type_id},#{alarm_level},#{alarm_note})
+	</insert>
+	
+	<!-- 更新Eigen -->
+	<update id="updateEigen" parameterType="Alarm">
+		update Eigen_alarm set eigen_sourceIP=#{eigen_sourceIP},eigen_destinationIP=#{eigen_destinationIP},eigen_protocol=#{eigen_protocol} where eigen_id = #{eigen_id}
+	</update>
+	
+	<!-- 更新DNS -->
+	<update id="updateDNS" parameterType="Alarm">
+		update blackDNS_alarm set blackDNS_dns=#{blackDNS_DNS} where blackDNS_id = #{blackDNS_id}
+	</update>
+	
+	<!-- 更新IP -->
+	<update id="updateIP" parameterType="Alarm">
+		update blackIP_alarm set blackIP_ip=#{blackIP_ip} where blackIP_id = #{blackIP_id}
+	</update>
+	
+	<!-- 更新邮件 -->
+	<update id="updateEmail" parameterType="Alarm">
+		update email_alarm set email_location=#{email_location},email_blockwords=#{email_blockwords} where email_id = #{email_id}
+	</update>
+	
+	<!-- 更新INFO -->
+	<update id="updateAlarmInfo" parameterType="Alarm">
+		update alarm_info set alarm_name=#{alarm_name},Alarm_type_id=#{alarm_type_id}, Alarm_level=#{alarm_level}, Alarm_note=#{alarm_note} where info_id = #{info_id};
+	</update>
+
+	<!--  获取各个警报的记录条数   -->
+	<select id="getEigenRowCount" resultType="int">
+		select count(*) from eigen_alarm
+	</select>
+
+	<select id="getDNSRowCount" resultType="int">
+		select count(*) from blackDNS_alarm
+	</select>
+
+	<select id="getIPRowCount" resultType="int">
+		select count(*) from blackIP_alarm
+	</select>
+
+	<select id="getEmailRowCount" resultType="int">
+		select count(*) from email_alarm
+	</select>
+
+	<!-- ===========获取警报类型============ -->
+	<select id="getAlarmTypes" resultType="AlarmType" >
+		Select * from alarm_type
+	</select>
+	
+	<sql id="alarm_info">
+		alarm_info.alarm_name,alarm_info.alarm_type_id,alarm_info.alarm_level,alarm_info.alarm_note 
+	</sql>
+	
+	<!-- ===========邮件警报============ -->
+	
+	<select id="getEmailAlarmWithLimit" parameterType="SqlLimit" resultType="EmailAlarm">
+			select email_alarm.*,
+			<include refid="alarm_info"/>
+			from email_alarm,alarm_info where email_alarm.info_id=alarm_info.info_id limit #{offset},#{rowcount}
+	</select>
+	
+	
+	
+	<!-- ===========IP警报============ -->
+	<select id="getBlackIPAlarmWithLimit" parameterType="SqlLimit" resultType="BlackIP">
+			select blackIP_alarm.*,
+			<include refid="alarm_info"/>
+			from blackIP_alarm,alarm_info where blackIP_alarm.info_id=alarm_info.info_id  limit #{offset},#{rowcount}
+	</select>
+	
+	<!-- ===========DNS警报============ -->
+	<select id="getBlackDNSAlarmWithLimit" parameterType="SqlLimit" resultType="BlackDNS">
+			select blackDNS_alarm.*,
+			<include refid="alarm_info"/>
+			from blackDNS_alarm,alarm_info  where blackDNS_alarm.info_id=alarm_info.info_id limit #{offset},#{rowcount}
+	</select>
+	
+	<!-- ===========Eigen警报============ -->
+	<select id="getEigenAlarmWithLimit" parameterType="SqlLimit" resultType="EigenAlarm">
+			select eigen_alarm.*,
+			<include refid="alarm_info"/>
+			from eigen_alarm,alarm_info  where eigen_alarm.info_id=alarm_info.info_id limit #{offset},#{rowcount}
+	</select>
+	
+	
+	<select id="getAlarmInfoById" resultType="Alarm">
+		select * from alarm_info where info_id = #{info_id}
+	</select>
+
+</mapper>

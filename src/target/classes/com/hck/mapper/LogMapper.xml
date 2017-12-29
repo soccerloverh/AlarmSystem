@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hck.mapper.LogMapper">
+	<insert id="log" parameterType="Log">
+		insert into logging(log_userName,log_operation,log_time,log_ip) 
+			values(#{log_userName},#{log_operation},#{log_time},#{log_ip});
+	</insert>
+	
+	<select id="getLogs" parameterType="SqlLimit" resultType="Log">
+		SELECT * FROM logging ORDER BY log_id DESC LIMIT #{offset},#{rowcount};
+	</select>
+	
+	<select id="getRowCount" resultType="int">
+		select count(*) from logging;
+	</select>
+</mapper>
